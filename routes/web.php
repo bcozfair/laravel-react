@@ -13,8 +13,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
 
 
 Route::get('/test', function () {
@@ -30,3 +30,21 @@ Route::get('/tictactoe', function () {
 Route::get('/fruit', function () {
     return Inertia::render('Fruit');
 })->name('fruit');
+
+
+Route::get('/hello-teacher', function () {
+    return Inertia::render('HelloTeacher');
+})->name('hello-teacher');
+
+
+Route::get('/about-page', function () {
+    return Inertia::render('AboutPage');
+})->name('about-page');
+
+Route::get('/home-page', function () {
+    return Inertia::render('HomePage');
+})->name('home-page');
+
+Route::get('/bootstrap', function () {
+    return Inertia::render('BootstrapContent');
+})->name('bootstrap');
