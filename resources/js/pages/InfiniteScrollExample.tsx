@@ -53,7 +53,7 @@ function InfiniteScrollExample() {
         <BootstrapLayout>
             <div className="container">
                 <Head title="Counter" />
-                <h1>Infinite Scroll Example</h1>.
+                <h1>Infinite Scroll Example</h1>
 
                 <div className="row row-cols-1 row-cols-md-3 g-4">
                     {data.map((item, index) => (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/POSSystem.css';
+import { Menu, X, Search, ShoppingBag, LogOut, Cog, Store, LayoutDashboard, ChevronLeft, ChevronRight, Package } from "lucide-react";
 
 interface Product {
     id: number;
@@ -58,6 +59,31 @@ const POSSystem: React.FC = () => {
         type: 'info'
     });
     const [activeMenu, setActiveMenu] = useState('orders');                 // เมนูที่เลือกใน sidebar
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    // Toggle sidebar in mobile view
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    // Toggle cart panel in mobile view
+    const toggleCart = () => {
+        setIsCartOpen(!isCartOpen);
+    };
+
+    // Effect to close sidebars when resizing to larger screen
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) {
+                setIsSidebarOpen(false);
+                setIsCartOpen(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Calculate totals
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);    // คำนวณยอดรวมทั้งหมดในตะกร้า
@@ -252,19 +278,58 @@ const POSSystem: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-gray-100">
+        <div className="flex flex-col lg:flex-row h-screen w-full overflow-hidden bg-gray-100">
             {/* Notification Component */}
             <Notification notification={notification} />
 
+            {/* Mobile Header */}
+            <div className="lg:hidden flex items-center justify-between px-4 py-2 bg-cyan-600 text-white shadow-md">
+                <button onClick={toggleSidebar} className="p-2 rounded-lg hover:bg-cyan-700">
+                    <Menu size={24} />
+                </button>
+                <img
+                    src="https://www.vru.ac.th/wp-content/uploads/2021/02/Untitled-1-Recovered.gif"
+                    alt="VRU Logo"
+                    className="h-10 object-contain"
+                />
+                <button
+                    onClick={toggleCart}
+                    className="p-2 rounded-lg hover:bg-cyan-700 relative"
+                >
+                    <ShoppingBag size={24} />
+                    {cart.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                            {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                        </span>
+                    )}
+                </button>
+            </div>
+
             {/* Left sidebar - Menu */}
-            <div className="w-18 bg-cyan-600 flex flex-col items-center py-1 shadow-lg">
+            <div
+                className={`
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+                lg:translate-x-0 fixed lg:static z-40 h-full
+                w-16 lg:w-16 bg-cyan-600 flex flex-col items-center  shadow-lg transition-transform duration-300
+            `}
+            >
+                {/* Slide-close arrow for mobile */}
+                <div className="lg:hidden absolute top-1/2 -right-4 transform -translate-y-1/2 z-50">
+                    <button
+                        onClick={toggleSidebar}
+                        className="bg-cyan-700 hover:bg-cyan-300 text-white rounded-full p-2 shadow-lg transition-all"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                </div>
+
                 {/* Logo */}
-                <div className="w-18 h-18 flex items-center justify-center mb-5">
+                <div className="lg:flex w-16 h-16 items-center justify-center">
                     <a href="/shop">
                         <img
                             src="https://www.vru.ac.th/wp-content/uploads/2021/02/Untitled-1-Recovered.gif"
                             alt="VRU Logo"
-                            className="w-18 h-18 object-contain rounded-lg hover:scale-105 transition-transform"
+                            className="w-16 h-16 object-contain rounded-lg hover:scale-105 transition-transform"
                         />
                     </a>
                 </div>
@@ -274,57 +339,46 @@ const POSSystem: React.FC = () => {
                     {/* Orders */}
                     <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md
-                        ${activeMenu === 'orders' ? 'bg-white text-cyan-600 transform scale-110 shadow-lg' : 'bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg'}`}
-                        onClick={() => setActiveMenu('orders')}
+              ${activeMenu === "orders" ? "bg-white text-cyan-600 transform scale-110 shadow-lg" : "bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg"}`}
+                        onClick={() => setActiveMenu("orders")}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
+                        <Store size={20} />
                     </div>
 
                     {/* Products */}
                     <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md
-                        ${activeMenu === 'products' ? 'bg-white text-cyan-600 transform scale-110 shadow-lg' : 'bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg'}`}
-                        onClick={() => setActiveMenu('products')}
+              ${activeMenu === "products" ? "bg-white text-cyan-600 transform scale-110 shadow-lg" : "bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg"}`}
+                        onClick={() => setActiveMenu("products")}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
+                        <Package size={20} />
                     </div>
 
                     {/* Dashboard */}
                     <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md
-                        ${activeMenu === 'dashboard' ? 'bg-white text-cyan-600 transform scale-110 shadow-lg' : 'bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg'}`}
-                        onClick={() => setActiveMenu('dashboard')}
+              ${activeMenu === "dashboard" ? "bg-white text-cyan-600 transform scale-110 shadow-lg" : "bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg"}`}
+                        onClick={() => setActiveMenu("dashboard")}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                        </svg>
+                        <LayoutDashboard size={20} />
                     </div>
 
                     {/* Settings */}
                     <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md
-                        ${activeMenu === 'settings' ? 'bg-white text-cyan-600 transform scale-110 shadow-lg' : 'bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg'}`}
-                        onClick={() => setActiveMenu('settings')}
+              ${activeMenu === "settings" ? "bg-white text-cyan-600 transform scale-110 shadow-lg" : "bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-cyan-300 hover:text-cyan-700 hover:shadow-lg"}`}
+                        onClick={() => setActiveMenu("settings")}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <Cog size={20} />
                     </div>
 
                     {/* Logout */}
                     <div
                         className={`w-10 h-10 mb-4 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md mt-auto
-                        ${activeMenu === 'logout' ? 'bg-red-100 text-red-600 transform scale-110 shadow-lg' : 'bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-red-400 hover:text-white hover:shadow-lg'}`}
-                        onClick={() => setActiveMenu('logout')}
+              ${activeMenu === "logout" ? "bg-red-100 text-red-600 transform scale-110 shadow-lg" : "bg-cyan-700 bg-opacity-20 text-white hover:bg-opacity-30 hover:bg-red-400 hover:text-white hover:shadow-lg"}`}
+                        onClick={() => setActiveMenu("logout")}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
+                        <LogOut size={20} />
                     </div>
                 </div>
             </div>
@@ -335,89 +389,77 @@ const POSSystem: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex-grow relative">
                         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-sm">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
+                            <Search size={16} />
                         </div>
                         <input
                             type="text"
-                            className="w-full py-3 px-14 bg-white rounded-full border-none shadow-md focus:ring-2 focus:ring-cyan-300 focus:outline-none transition-all"
+                            className="w-full py-2 sm:py-3 px-12 bg-white rounded-full border-none shadow-md focus:ring-2 focus:ring-cyan-300 focus:outline-none transition-all"
                             placeholder="ค้นหาเมนู ..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             id="search-input"
                         />
                     </div>
-                    <div className="ml-4 w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-md relative hover:bg-cyan-600 transition-colors">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            viewBox="0 0 576 512"
-                            fill="currentColor"
-                        >
-                            <path
-                                d="M253.3 35.1c6.1-11.8 1.5-26.3-10.2-32.4s-26.3-1.5-32.4 10.2L117.6 192 32 192c-17.7 0-32 14.3-32 32s14.3 32 32 32L83.9 463.5C91 492 116.6 512 146 512L430 512c29.4 0 55-20 62.1-48.5L544 256c17.7 0 32-14.3 32-32s-14.3-32-32-32l-85.6 0L365.3 12.9C359.2 1.2 344.7-3.4 332.9 2.7s-16.3 20.6-10.2 32.4L404.3 192l-232.6 0L253.3 35.1zM192 304l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16s16 7.2 16 16zm96-16c8.8 0 16 7.2 16 16l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16zm128 16l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                            />
-                        </svg>
-                        {cart.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                            </span>
-                        )}
+                    <div className="ml-2 lg:ml-4 w-10 h-10 lg:w-12 lg:h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-md relative hover:bg-cyan-600 transition-colors hidden sm:hidden lg:flex">
+                        <button onClick={toggleCart}>
+                            <ShoppingBag size={20} />
+                            {cart.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                                </span>
+                            )}
+                        </button>
                     </div>
                 </div>
 
                 {/* Category Tabs */}
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+                <div className="flex-row gap-2 mb-4 no-scrollbar">
                     <button
-                        className={`px-4 py-1 rounded-full ${activeCategory === 'ทั้งหมด' ? 'bg-cyan-500 text-white' : 'bg-transparent'}`}
-                        onClick={() => setActiveCategory('ทั้งหมด')}
+                        className={`px-3 py-1 rounded-full text-sm ${activeCategory === "ทั้งหมด" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                        onClick={() => setActiveCategory("ทั้งหมด")}
                     >
                         ทั้งหมด
                     </button>
                     <button
-                        className={`px-4 py-1 rounded-full ${activeCategory === 'อาหาร' ? 'bg-cyan-500 text-white' : 'bg-transparent'}`}
-                        onClick={() => setActiveCategory('อาหาร')}
+                        className={`px-3 py-1 rounded-full text-sm ${activeCategory === "อาหาร" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                        onClick={() => setActiveCategory("อาหาร")}
                     >
                         อาหาร
                     </button>
                     <button
-                        className={`px-4 py-1 rounded-full ${activeCategory === 'เครื่องดื่ม' ? 'bg-cyan-500 text-white' : 'bg-transparent'}`}
-                        onClick={() => setActiveCategory('เครื่องดื่ม')}
+                        className={`px-3 py-1 rounded-full text-sm ${activeCategory === "เครื่องดื่ม" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                        onClick={() => setActiveCategory("เครื่องดื่ม")}
                     >
                         เครื่องดื่ม
                     </button>
                     <button
-                        className={`px-4 py-1 rounded-full ${activeCategory === 'ของหวาน' ? 'bg-cyan-500 text-white' : 'bg-transparent'}`}
-                        onClick={() => setActiveCategory('ของหวาน')}
+                        className={`px-3 py-1 rounded-full text-sm ${activeCategory === "ของหวาน" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                        onClick={() => setActiveCategory("ของหวาน")}
                     >
                         ของหวาน
                     </button>
                 </div>
 
                 {/* Product Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 mt-2">
-                    {filteredProducts.map(product => (
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 p-4">
+                    {filteredProducts.map((product) => (
                         <div
                             className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer hover:bg-cyan-50"
                             key={product.id}
                             onClick={() => addToCart(product)}
                         >
-                            <div className="w-45 h-45 bg-cover bg-center mx-auto" style={{ backgroundImage: `url(${product.image})` }}></div>
+                            <div className="w-full aspect-square mx-auto lg:w-40">
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
                             <div className="p-3">
-                                <h3 className="text-lg font-medium mb-1">{product.name}</h3>
-                                <p className="text-2xl text-cyan-500 font-bold">{formatPrice(product.price)}</p>
+                                <h3 className="text-base sm:text-lg font-medium mb-1 bottom-0">{product.name}</h3>
+                                <p className="text-xl sm:text-2xl text-cyan-500 font-bold bottom-0">
+                                    {formatPrice(product.price)}
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -425,27 +467,32 @@ const POSSystem: React.FC = () => {
             </div>
 
             {/* Right Panel - Cart */}
-            <div className="w-80 bg-white shadow-xl flex flex-col">
+            <div
+                className={`
+          ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} 
+          lg:translate-x-0 fixed lg:static right-0 top-0 z-40 h-full
+          w-full sm:w-80 bg-white shadow-xl flex flex-col transition-transform duration-300
+        `}
+            >
+                {/* Cart Header (Mobile Only) */}
+                <div className="lg:hidden flex items-center p-4 border-b">
+                    <button onClick={toggleCart} className="mr-2">
+                        <ChevronRight size={24} />
+                    </button>
+                    <h2 className="text-lg font-medium">รายการคำสั่งซื้อ</h2>
+                </div>
+
                 <div className="flex-grow overflow-y-auto p-4">
                     {cartState.isEmpty ? (
                         <div className="flex flex-col items-center justify-center h-full text-center py-8 animate-fade-in">
                             <div className="relative mb-6">
-                                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-10 w-10 text-gray-400"
-                                        viewBox="0 0 576 512"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M253.3 35.1c6.1-11.8 1.5-26.3-10.2-32.4s-26.3-1.5-32.4 10.2L117.6 192 32 192c-17.7 0-32 14.3-32 32s14.3 32 32 32L83.9 463.5C91 492 116.6 512 146 512L430 512c29.4 0 55-20 62.1-48.5L544 256c17.7 0 32-14.3 32-32s-14.3-32-32-32l-85.6 0L365.3 12.9C359.2 1.2 344.7-3.4 332.9 2.7s-16.3 20.6-10.2 32.4L404.3 192l-232.6 0L253.3 35.1zM192 304l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16s16 7.2 16 16zm96-16c8.8 0 16 7.2 16 16l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16zm128 16l0 96c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                                        />
-                                    </svg>
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <ShoppingBag className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
                                 </div>
-                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center">
+                                <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-cyan-100 rounded-full flex items-center justify-center">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5 text-cyan-500"
+                                        className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-500"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -459,43 +506,58 @@ const POSSystem: React.FC = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-600 mb-2">คำสั่งซื้อของคุณว่างเปล่า</h3>
-                            <p className="text-gray-500 mb-6">กรุณาเพิ่มสินค้าลงในรายการ</p>
-
+                            <h3 className="text-base sm:text-lg font-medium text-gray-600 mb-2">
+                                คำสั่งซื้อของคุณว่างเปล่า
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-6">
+                                กรุณาเพิ่มสินค้าในรายการ
+                            </p>
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {cart.map(item => (
+                            {cart.map((item) => (
                                 <div
                                     className="flex items-center p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
                                     key={item.id}
                                 >
-                                    <div className="w-14 h-14 rounded-lg overflow-hidden mr-3 flex-shrink-0">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden mr-3 flex-shrink-0">
                                         <img
                                             src={item.image}
                                             alt={item.name}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
-                                                e.currentTarget.src = '/placeholder-product.png';
-                                                e.currentTarget.className = 'w-full h-full object-contain p-2 bg-gray-100';
+                                                e.currentTarget.src = "/api/placeholder/100/100";
+                                                e.currentTarget.className = "w-full h-full object-contain p-2 bg-gray-100";
                                             }}
                                         />
                                     </div>
                                     <div className="flex-grow">
-                                        <h4 className="text-sm font-medium text-gray-800">{item.name}</h4>
-                                        <p className="text-sm text-cyan-500 font-bold">{formatPrice(item.price)}</p>
+                                        <h4 className="text-sm sm:text-sm font-medium text-gray-800">
+                                            {item.name}
+                                        </h4>
+                                        <p className="text-sm sm:text-sm text-cyan-500 font-bold">
+                                            {formatPrice(item.price)}
+                                        </p>
                                     </div>
-                                    <div className="flex items-center gap-2 bg-gray-100 rounded-full px-2 py-1">
+                                    <div className="flex items-center gap-1 sm:gap-2 bg-gray-100 rounded-full px-2 py-1">
                                         <button
-                                            onClick={() => removeFromCart(item.id)}
-                                            className="text-2xl w-7 h-7 rounded-full bg-white text-cyan-500 flex items-center justify-center hover:bg-cyan-100 transition-colors shadow-sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                removeFromCart(item.id);
+                                            }}
+                                            className="text-xl w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-cyan-500 flex items-center justify-center hover:bg-cyan-100 transition-colors shadow-sm"
                                         >
                                             -
                                         </button>
-                                        <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
+                                        <span className="text-xs sm:text-sm font-medium w-4 text-center">
+                                            {item.quantity}
+                                        </span>
                                         <button
-                                            onClick={() => addToCart(item)}
-                                            className="w-7 h-7 rounded-full bg-cyan-500 text-white flex items-center justify-center hover:bg-cyan-600 transition-colors shadow-sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                addToCart(item);
+                                            }}
+                                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-cyan-500 text-white flex items-center justify-center hover:bg-cyan-600 transition-colors shadow-sm"
                                         >
                                             +
                                         </button>
@@ -506,31 +568,33 @@ const POSSystem: React.FC = () => {
                     )}
                 </div>
 
-                <div className="p-5 border-t border-gray-200">
+                <div className="p-4 border-t border-gray-200">
                     <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg text-gray-600">รวมทั้งสิ้น</h3>
-                        <h2 className="text-xl text-green-500 font-bold">{formatPrice(cartTotal)}</h2>
+                        <h3 className="text-base sm:text-lg text-gray-600">รวมทั้งสิ้น</h3>
+                        <h2 className="text-lg sm:text-xl text-green-500 font-bold">
+                            {formatPrice(cartTotal)}
+                        </h2>
                     </div>
 
-                    <div className="bg-gray-100 p-4 rounded-lg mb-3">
-                        <div className="flex items-center mb-4">
-                            <label className="text-gray-600 w-14">เงินสด</label>
+                    <div className="bg-gray-100 p-3 sm:p-4 rounded-lg mb-3">
+                        <div className="flex items-center mb-3 sm:mb-4">
+                            <label className="text-gray-600 w-12 sm:w-14 text-sm">เงินสด</label>
                             <div className="flex-grow flex">
                                 <input
                                     type="number"
-                                    className="flex-grow bg-white p-2 border border-gray-200 rounded-l text-right w-10 text-lg font-bold text-gray-600"
-                                    value={cashAmount || ''}
+                                    className="flex-grow bg-white p-1 sm:p-2 border border-gray-200 rounded-l text-right w-8 sm:w-10 text-base sm:text-lg font-bold text-gray-600"
+                                    value={cashAmount || ""}
                                     onChange={handleCashAmountChange}
                                     placeholder="0"
                                 />
                                 <button
                                     onClick={() => setCashAmount(0)}
-                                    className="px-3 bg-gray-200 text-gray-700 rounded-r hover:bg-gray-300 transition-colors border border-l-0 border-gray-200"
+                                    className="px-2 sm:px-3 bg-gray-200 text-gray-700 rounded-r hover:bg-gray-300 transition-colors border border-l-0 border-gray-200"
                                     title="Reset cash amount"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5"
+                                        className="h-4 w-4 sm:h-5 sm:w-5"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -546,40 +610,40 @@ const POSSystem: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 mb-1">
+                        <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-1">
                             <button
                                 onClick={() => addCashAmount(10)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +10
                             </button>
                             <button
                                 onClick={() => addCashAmount(20)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +20
                             </button>
                             <button
                                 onClick={() => addCashAmount(50)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +50
                             </button>
                             <button
                                 onClick={() => addCashAmount(100)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +100
                             </button>
                             <button
                                 onClick={() => addCashAmount(500)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +500
                             </button>
                             <button
                                 onClick={() => addCashAmount(1000)}
-                                className="p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100"
+                                className="p-1 sm:p-2 bg-white border border-gray-200 rounded hover:bg-cyan-100 text-sm"
                             >
                                 +1000
                             </button>
@@ -587,22 +651,25 @@ const POSSystem: React.FC = () => {
                     </div>
 
                     <div className="flex justify-between items-center p-2 bg-cyan-50 rounded mb-4">
-                        <h3 className="text-xl text-cyan-500 font-bold">เงินทอน</h3>
-                        <h2 className={`text-2xl font-bold ${changeAmount < 0 ? 'text-red-500' : 'text-cyan-500'}`}>
+                        <h3 className="text-lg sm:text-xl text-cyan-500 font-bold">เงินทอน</h3>
+                        <h2
+                            className={`text-xl sm:text-2xl font-bold ${changeAmount < 0 ? "text-red-500" : "text-cyan-500"
+                                }`}
+                        >
                             {formatPrice(changeAmount >= 0 ? changeAmount : 0)}
                         </h2>
                     </div>
 
                     <div className="flex gap-2">
                         <button
-                            className="flex-1 p-3 bg-red-200 text-red-500 font-medium rounded hover:bg-red-300 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="flex-1 p-2 sm:p-3 bg-red-200 text-red-500 font-medium rounded hover:bg-red-300 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-sm sm:text-base"
                             onClick={resetCart}
                             disabled={cart.length === 0}
                         >
                             ยกเลิก
                         </button>
                         <button
-                            className="flex-1 p-3 bg-cyan-500 text-white font-medium rounded hover:bg-cyan-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="flex-1 p-2 sm:p-3 bg-cyan-500 text-white font-medium rounded hover:bg-cyan-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-sm sm:text-base"
                             onClick={processPayment}
                             disabled={cart.length === 0 || cashAmount < cartTotal}
                         >
