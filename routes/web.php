@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -80,3 +81,15 @@ Route::get('/infinite-scroll', function () {
 Route::get('/shop', function () {
     return Inertia::render('POSSystem');
 })->name('shop');
+
+
+// use App\Models\Product;
+Route::get('/product', function () {
+    $products = Product::all();
+    return Inertia::render('ProductList', compact('products') );
+})->name('product');
+
+
+Route::get('/product-others', function () {
+    return Inertia::render('ProductOthers');
+})->name('product-others');
