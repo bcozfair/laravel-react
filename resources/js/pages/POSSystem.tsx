@@ -28,20 +28,26 @@ interface CartState {
 }
 
 const POSSystem: React.FC = () => {
-    // Mock product data
-    const mockProducts: Product[] = [
-        { id: 1, name: 'เบอร์เกอร์เนื้อ', price: 79, image: 'https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-3d-rendering-of-burger-png-png-image_9192426.png', category: 'อาหาร' },
-        { id: 2, name: 'แซนวิช', price: 59, image: 'https://img.wongnai.com/p/256x256/2023/05/09/20e0f6217ca3444fbf09e999f4141fc1.jpg', category: 'อาหาร' },
-        { id: 3, name: 'ชาเขียวเย็น', price: 45, image: 'https://png.pngtree.com/png-vector/20240626/ourmid/pngtree-a-tall-cup-of-frozen-green-tea-png-image_12841362.png', category: 'เครื่องดื่ม' },
-        { id: 4, name: 'ซินนามอนโรล', price: 35, image: 'https://img.wongnai.com/p/256x256/2023/06/08/ea6fb1e1ee894404a247cdd546206255.jpg', category: 'ของหวาน' },
-        { id: 5, name: 'โดนัทช็อกโกแลต', price: 29, image: 'https://png.pngtree.com/png-clipart/20241102/original/pngtree-chocolate-donut-with-nuts-clipart-illustration-high-resolution-isolated-free-png-image_16640127.png', category: 'ของหวาน' },
-        { id: 6, name: 'ครัวซองต์', price: 45, image: 'https://png.pngtree.com/png-vector/20240201/ourmid/pngtree-two-croissants-on-a-plate-ai-generated-png-image_11526214.png', category: 'อาหาร' },
-        { id: 7, name: 'กาแฟเย็น', price: 55, image: 'https://png.pngtree.com/png-clipart/20250106/original/pngtree-iced-coffee-in-cafe-setting-png-image_18847105.png', category: 'เครื่องดื่ม' },
-        { id: 8, name: 'ช็อกโกแลตเย็น', price: 39, image: 'https://cdn.pixabay.com/photo/2024/03/27/05/43/chocolate-8658265_640.png', category: 'เครื่องดื่ม' },
-    ];
+
+    const [productpos, setProducts] = useState<Product[]>([]);
+    
+    const loadData2 = async () => {
+        try {
+            const response = await fetch("/api/productpos" );            
+            const data = await response.json();
+            setProducts(data);
+        } catch (error) {
+            console.error( "There was an error fetching the products!", error );
+        }
+    };
+
+    useEffect(() => {
+        // loadData();
+        loadData2();
+    }, []);
 
     // States
-    const [products] = useState<Product[]>(mockProducts);                   // สินค้าทั้งหมด (ไม่เปลี่ยนแปลง)
+    
     const [cart, setCart] = useState<CartItem[]>([]);                       // สินค้าในตะกร้า
     const [cartState, setCartState] = useState<CartState>({                 // สถานะตะกร้า (รวมถึงการตรวจสอบว่าตะกร้าว่างหรือไม่)
         items: [],
@@ -108,7 +114,7 @@ const POSSystem: React.FC = () => {
     }, [cart]);
 
     // Filter products by search term and category
-    const filteredProducts = products.filter(product => {
+    const filteredProducts = productpos.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = activeCategory === 'ทั้งหมด' || product.category === activeCategory;
         return matchesSearch && matchesCategory;
