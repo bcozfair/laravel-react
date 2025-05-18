@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ProductController;
 use App\Models\Product;
 use App\Models\Productpos;
 use Illuminate\Http\Request;
@@ -21,3 +22,4 @@ Route::get('/productpos', function () {
     return response()->json($products); // Return as JSON
 });
 
+Route::apiResource('/product', ProductController::class);
