@@ -498,6 +498,32 @@ const POSSystem: React.FC = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+                        <div className="flex-row gap-2 mb-4 no-scrollbar">
+                            <button
+                                className={`px-3 py-1 rounded-full text-sm ${activeCategory === "ทั้งหมด" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                                onClick={() => setActiveCategory("ทั้งหมด")}
+                            >
+                                ทั้งหมด
+                            </button>
+                            <button
+                                className={`px-3 py-1 rounded-full text-sm ${activeCategory === "อาหาร" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                                onClick={() => setActiveCategory("อาหาร")}
+                            >
+                                อาหาร
+                            </button>
+                            <button
+                                className={`px-3 py-1 rounded-full text-sm ${activeCategory === "เครื่องดื่ม" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                                onClick={() => setActiveCategory("เครื่องดื่ม")}
+                            >
+                                เครื่องดื่ม
+                            </button>
+                            <button
+                                className={`px-3 py-1 rounded-full text-sm ${activeCategory === "ของหวาน" ? "bg-cyan-500 text-white" : "bg-transparent"}`}
+                                onClick={() => setActiveCategory("ของหวาน")}
+                            >
+                                ของหวาน
+                            </button>
+                        </div>
                         <div className="bg-white rounded-lg shadow overflow-hidden max-h-[80vh] overflow-y-auto">
                             <table className="w-full table-auto">
                                 <thead className="bg-gray-50 sticky top-0">
