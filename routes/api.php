@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductposController;
 use App\Models\Product;
 use App\Models\Productpos;
 use Illuminate\Http\Request;
@@ -23,3 +24,6 @@ Route::get('/productpos', function () {
 });
 
 Route::apiResource('/product', ProductController::class);
+
+Route::get('/productpos', [ProductposController::class, 'index']);
+Route::apiResource('productpos', ProductposController::class);
