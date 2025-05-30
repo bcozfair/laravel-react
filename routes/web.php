@@ -23,16 +23,6 @@ Route::get('/test', function () {
 })->name('test');
 
 
-Route::get('/tictactoe', function () {
-    return Inertia::render('Tictactoe');
-})->name('tictactoe');
-
-
-Route::get('/fruit', function () {
-    return Inertia::render('Fruit');
-})->name('fruit');
-
-
 Route::get('/hello-teacher', function () {
     return Inertia::render('HelloTeacher');
 })->name('hello-teacher');
@@ -109,3 +99,16 @@ Route::get('/product/{id}/edit', function ($id) {
     $product = Product::findOrFail($id);
     return Inertia::render('ProductForm', compact('product'));
 })->name('product.edit');
+
+
+//ใช้ Middleware Group
+Route::middleware(['auth','role:admin,fruit'])->group(function () {
+    Route::get('/fruit', function () {
+        return Inertia::render('Fruit');
+    });
+});
+
+//ใช้เมธอด middleware()
+Route::get('/tictactoe', function () {
+    return Inertia::render('Tictactoe');
+})->middleware('auth') ;

@@ -1,3 +1,5 @@
+import '../../../css/app.css';
+
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
