@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\MaintenanceRequestController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductposController;
 use App\Models\Product;
@@ -11,19 +13,22 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-//don't edit top detail
-
 Route::get('/product', function () {
-    $products = Product::all(); // Fetch all products
-    return response()->json($products); // Return as JSON
+    $products = Product::all();
+    return response()->json($products);
 });
 
 Route::get('/productpos', function () {
-    $products = Productpos::all(); // Fetch all products
-    return response()->json($products); // Return as JSON
+    $products = Productpos::all();
+    return response()->json($products);
+});
+
+Route::prefix('maintenance')->group(function () {
+    Route::apiResource('requests', MaintenanceRequestController::class);
+    Route::get('technicians', [MaintenanceRequestController::class, 'technicians']);
+    Route::apiResource('invoices', InvoiceController::class);
+    Route::get('invoices/{id}/print', [InvoiceController::class, 'print'])->name('invoices.print');
 });
 
 Route::apiResource('/product', ProductController::class);
-
-Route::get('/productpos', [ProductposController::class, 'index']);
 Route::apiResource('productpos', ProductposController::class);

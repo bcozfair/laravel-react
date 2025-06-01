@@ -17,79 +17,63 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
-
 Route::get('/test', function () {
     return Inertia::render('Test');
 })->name('test');
-
 
 Route::get('/hello-teacher', function () {
     return Inertia::render('HelloTeacher');
 })->name('hello-teacher');
 
-
 Route::get('/about-page', function () {
     return Inertia::render('AboutPage');
 })->name('about-page');
-
 
 Route::get('/home-page', function () {
     return Inertia::render('HomePage');
 })->name('home-page');
 
-
 Route::get('/bootstrap', function () {
     return Inertia::render('BootstrapContent');
 })->name('bootstrap');
-
 
 Route::get('/circle', function () {
     return Inertia::render('Circle');
 })->name('circle');
 
-
 Route::get('/counter', function () {
     return Inertia::render('Counter');
 })->name('counter');
-
 
 Route::get('/form-example', function () {
     return Inertia::render('FormExample');
 })->name('form-example');
 
-
 Route::get('/list-manager', function () {
     return Inertia::render('ListManager');
 })->name('list-manager');
-
 
 Route::get('/infinite-scroll', function () {
     return Inertia::render('InfiniteScrollExample');
 })->name('infinite-scroll');
 
-
 Route::get('/shop', function () {
     return Inertia::render('POSSystem');
 })->name('shop');
 
-
-// use App\Models\Product;
 Route::get('/product', function () {
     $products = Product::all();
-    return Inertia::render('ProductList', compact('products') );
+    return Inertia::render('ProductList', compact('products'));
 })->name('product');
-
 
 Route::get('/product-others', function () {
     return Inertia::render('ProductOthers');
 })->name('product-others');
 
-
 Route::get('/product-manager', function () {
     $p = Product::all();
     return Inertia::render('ProductManager', compact('p'));
 })->name('product-manager');
-
 
 Route::get('/product/create', function () {
     return Inertia::render('ProductForm');
@@ -100,15 +84,16 @@ Route::get('/product/{id}/edit', function ($id) {
     return Inertia::render('ProductForm', compact('product'));
 })->name('product.edit');
 
+Route::get('/maintenance/requests', function () {
+    return Inertia::render('MaintenanceRequestSystem');
+})->name('maintenance.requests');
 
-//ใช้ Middleware Group
-Route::middleware(['auth','role:admin,fruit'])->group(function () {
+Route::middleware(['auth', 'role:admin,fruit'])->group(function () {
     Route::get('/fruit', function () {
         return Inertia::render('Fruit');
     });
 });
 
-//ใช้เมธอด middleware()
 Route::get('/tictactoe', function () {
     return Inertia::render('Tictactoe');
-})->middleware('auth') ;
+})->middleware('auth');

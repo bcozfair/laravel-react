@@ -1,0 +1,43 @@
+/* Tailwind CSS is assumed to be included via CDN or configured in the project */
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.animate-bounce {
+    animation: bounce 0.3s ease-in-out;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+@keyframes slide-down {
+    from { opacity: 0; max-height: 0; }
+    to { opacity: 1; max-height: 200px; }
+}
+.animate-slide-down {
+    animation: slide-down 0.3s ease-in-out;
+}
